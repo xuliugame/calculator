@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./style.css" type="text/css">
+    <title>Document</title>
+</head>
+<body>
+<div class="container">
+    <div class="main">
+        <div class="view">
+            <p id="expression"></p>
+            <p id="result"></p>
+        </div>
+        <div class="button-area">
+            <div class="btn" id="c" onClick="handleCal('c')">C</div>
+            <div class="btn" id="pre-bracket" onClick="handleCal('(')">(</div>
+            <div class="btn" id="clo-bracket" onClick="handleCal(')')">)</div>
+            <div class="btn" id="divide" onClick="handleCal('/')">/</div>
+            <div class="btn number" onClick="handleCal('1')">1</div>
+            <div class="btn number" onClick="handleCal('2')">2</div>
+            <div class="btn" onClick="handleCal('3')">3</div>
+            <div class="btn" onClick="handleCal('*')">*</div>
+            <div class="btn" onClick="handleCal('4')">4</div>
+            <div class="btn" onClick="handleCal('5')">5</div>
+            <div class="btn" onClick="handleCal('6')">6</div>
+            <div class="btn" onClick="handleCal('-')">-</div>
+            <div class="btn" onClick="handleCal('7')">7</div>
+            <div class="btn" onClick="handleCal('8')">8</div>
+            <div class="btn" onClick="handleCal('9')">9</div>
+            <div class="btn" onClick="handleCal('+')">+</div>
+            <div class="btn" onClick="handleCal('0')">0</div>
+            <div class="btn" onClick="handleCal('.')">.</div>
+            <div class="btn" onClick="handleCal('^')">^</div>
+            <div class="btn" onClick="CalRes()">=</div>
+            <div class="btn" onClick="handleCal('%')">%</div>
+        </div>
+    </div>
+</div>
+
+<script>
+// text showed on calculator
+let exp = '' 
+// final result
+let res = ''
+// option char
+const opt = ['+', '-', '*', '/', '^', '(', ')', '%']
+// get current number
+let num = ''
+// using stack to calculate final result, stack used to save middle result 
+let stackNum = []
+let stackOpt = []
+// judge grade option, ^ greater than all, */% greater than +-
+const isGrate = (a, b)=>{
+    switch(b){
+        // '+', '-' is lower than any operate
+        case '+':
+        case '-': return false;
+        // '*', '/', '%' greater than '+', '-'
+        case '*':
+        case '%':
+        case '/': {
+            if(a === '+' || a === '-') return true
+            return false
+        }
+        case '^': return true
+        default: return false
+    }
+
+}
+// calculate a operate b
+const calc = (a, b, o)=>{
+    switch(o){
+        case '+': return a+b;
+        case '-': return b-a;
+        case '*': return a*b;
+        case '/': return b/a;
+        case '^': return Math.pow(b, a);
+        case '%': return b%a
+    }
+}
+// handle Click Button event
+const handleCal = (char)=>{
+    exp += char
+    // click button 'c', clear text
+    if(char === 'c'){
+        num = ''
+        exp = ''
+        res = ''
+        document.getElementById('expression').innerHTML = 0
+        document.getElementById('result').innerHTML = ''
+        stackNum = []
+        stackOpt = []
+        return 
+    }
+    // if char is number , add to number
+    if(!opt.includes(char)){
+        num+=char
+    // if char is '(', add to operation stack
+    }else if(char === '('){
+        stackOpt.push(char)
+    // char is operation, handle as follow
+    }else{
+        // save current number to number stack
+        if(num !== ''){
+            stackNum.push(Number(num))
+        }
+        // current operation is greater than the operation in stack, push to stack
+        if(stackOpt.length === 0 || isGrate(stackOpt[stackOpt.length - 1], char) || stackOpt[stackOpt.length - 1] === '('){
+            stackOpt.push(char)
+            num = ''
+        // current operation is greater, calculate the result until it is not greater
+        }else if(!isGrate(stackOpt[stackOpt.length - 1], char) && char !== ')'){
+            while(!isGrate(stackOpt[stackOpt.length - 1], char) && stackOpt.length !== 0 && stackOpt[stackOpt.length - 1] !== '('){
+                let tr = calc(stackNum.pop(), stackNum.pop(), stackOpt.pop())
+                stackNum.push(tr)
+                console.log(stackOpt, stackNum);
+            }
+            stackOpt.push(char)
+            num = ''
+        // as for ), calculate result between ()
+        }else if(char === ')'){
+            let opt = stackOpt.pop()
+            while(opt !== '('){
+                let tr = calc(stackNum.pop(), stackNum.pop(), opt)
+                stackNum.push(tr)
+                opt = stackOpt.pop()
+            }
+            num = ''
+        }
+    }
+    // change content in DOM
+    document.getElementById('expression').innerHTML = exp
+    console.log(char, stackNum, stackOpt, num);
+}
+// calculate final result event
+const CalRes = ()=>{
+    // calculate all numbers in stack number
+    stackNum.push(Number(num))
+    while(stackOpt.length){
+        let tr = calc(stackNum.pop(), stackNum.pop(), stackOpt.pop())
+        stackNum.push(tr)
+    }
+    // show result
+    document.getElementById('result').innerHTML = stackNum[0]
+}
+</script>
+</body>
+</html>

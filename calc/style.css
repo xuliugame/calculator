@@ -1,0 +1,41 @@
+.container{
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.main{
+    border: 1px solid #000;
+    padding: 10px;
+}
+
+.button-area{
+    width: 400px;
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+
+.btn{
+    width: 80px;
+    height: 40px;
+    background-color: rgb(43, 164, 234);
+    color: aliceblue;
+    margin: 10px;
+    border-radius: 2px;
+    font-size: larger;
+    cursor: pointer;
+    line-height: 40px;
+    text-align: center;
+}
+
+.btn:hover{
+    background-color: rgb(80, 184, 244);
+}
+
+#expression, #result{
+    text-align: right;
+    margin-right: 10px;
+}
